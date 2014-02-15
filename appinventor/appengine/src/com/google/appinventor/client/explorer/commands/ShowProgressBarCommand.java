@@ -106,7 +106,7 @@ public class ShowProgressBarCommand extends ChainableCommand {
         super.onFailure(caught);
         executionFailedOrCanceled();}
     };
-    ode.getProjectService().getBuildResult(node.getProjectId(), target, callback);
+    ode.getProjectService().getBuildResult(node.getProjectId(), target,serviceName,callback);
   }
 
   class ProgressBarDialogBox extends DialogBox{
@@ -172,6 +172,10 @@ public class ShowProgressBarCommand extends ChainableCommand {
           warningLabel.setHTML("<br />The APK file will be saved in the download folder.");
         } else if (serviceName == "DownloadToPhoneAction"){
           warningLabel.setHTML("<br />The APK file will be installed in the phone.");
+        } else if (serviceName == "SmartLabAction") {
+            warningLabel.setHTML("<br />The APK file will be installed on your SmartLab devices.");
+          
+        
         } else {
           warningLabel.setHTML("<br />Waiting for the barcode.");
         }
@@ -199,6 +203,9 @@ public class ShowProgressBarCommand extends ChainableCommand {
               warningLabel.setHTML("<br />The APK file will be saved in your downloads folder.");
             } else if (serviceName == "DownloadToPhoneAction") {
               warningLabel.setHTML("<br />The APK file will be installed in the phone.");
+            } else if (serviceName == "SmartLabAction") {
+                warningLabel.setHTML("<br />The APK file will be installed on your SmartLab devices.");
+              
             } else {
               warningLabel.setHTML("<br />Waiting for the barcode.");
             }

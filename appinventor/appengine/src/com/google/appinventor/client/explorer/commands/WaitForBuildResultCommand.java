@@ -39,14 +39,14 @@ public class WaitForBuildResultCommand extends ChainableCommand {
   private static final int WAIT_INTERVAL_MILLIS = 10000;
   private final MessagesOutput messagesOutput;
   private final String buildRequestTime;
-
+  private String actionName;
   /**
    * Creates a new WaitForBuildResultCommand.
    *
    * @param target the build target
    */
-  public WaitForBuildResultCommand(String target) {
-    this(target, null);
+  public WaitForBuildResultCommand(String target,String actionName) {
+    this(target, null,actionName);
   }
 
   /**
@@ -56,9 +56,10 @@ public class WaitForBuildResultCommand extends ChainableCommand {
    * @param target the build target
    * @param nextCommand the command to execute after the build has finished
    */
-  public WaitForBuildResultCommand(String target, ChainableCommand nextCommand) {
+  public WaitForBuildResultCommand(String target, ChainableCommand nextCommand,String actionName) {
     super(nextCommand);
     this.target = target;
+    this.actionName = actionName;
     messagesOutput = MessagesOutput.getMessagesOutput();
     buildRequestTime = DateTimeFormat.getMediumDateTimeFormat().format(new Date());
   }
@@ -130,7 +131,7 @@ public class WaitForBuildResultCommand extends ChainableCommand {
       }
     };
 
-    ode.getProjectService().getBuildResult(node.getProjectId(), target, callback);
+    ode.getProjectService().getBuildResult(node.getProjectId(), target,actionName,callback);
   }
 
   private static YoungAndroidBlocksNode findBlocksNode(YoungAndroidProjectNode projectRootNode,

@@ -100,14 +100,14 @@ public interface ProjectServiceAsync {
   void save(List<FileDescriptorWithContent> filesAndContent, AsyncCallback<Long> callback);
 
   /**
-   * @see ProjectService#build(long, String, String)
+   * @see ProjectService#build(long, String, String, String)
    */
-  void build(long projectId, String nonce, String target, AsyncCallback<RpcResult> callback);
+  void build(long projectId, String nonce, String target,String actionName, AsyncCallback<RpcResult> callback);
 
   /**
    * @see ProjectService#getBuildResult(long, String)
    */
-  void getBuildResult(long projectId, String target, AsyncCallback<RpcResult> callback);
+  void getBuildResult(long projectId, String target,String actionName, AsyncCallback<RpcResult> callback);
 
   /**
    * @see ProjectService#addFile(long, String)

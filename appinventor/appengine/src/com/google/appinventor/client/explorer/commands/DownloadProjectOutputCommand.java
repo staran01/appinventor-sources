@@ -6,6 +6,7 @@
 package com.google.appinventor.client.explorer.commands;
 
 import com.google.common.base.Preconditions;
+import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand.BarcodeDialogBox;
 import com.google.appinventor.client.utils.Downloader;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -43,5 +44,6 @@ public class DownloadProjectOutputCommand extends ChainableCommand {
   public void execute(ProjectNode node) {
     Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +
         ServerLayout.DOWNLOAD_PROJECT_OUTPUT + "/" + node.getProjectId() + "/" + target);
+    	
   }
 }

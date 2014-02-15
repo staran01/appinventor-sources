@@ -200,7 +200,7 @@ public abstract class CommonProjectService {
    *
    * @return  build results
    */
-  public abstract RpcResult build(User user, long projectId, String nonce, String target);
+  public abstract RpcResult build(User user, long projectId, String nonce, String target,String actionName);
 
   /**
    * Gets the result of a build command for the project.
@@ -213,5 +213,5 @@ public abstract class CommonProjectService {
    *            1: Build is done and was unsuccessful
    *           -1: Build is not yet done.
    */
-  public abstract RpcResult getBuildResult(User user, long projectId, String target);
+  public abstract RpcResult getBuildResult(User user, long projectId, String target,String actionName);
 }

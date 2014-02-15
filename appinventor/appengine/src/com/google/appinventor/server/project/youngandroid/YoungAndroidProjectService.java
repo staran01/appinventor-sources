@@ -5,6 +5,25 @@
 
 package com.google.appinventor.server.project.youngandroid;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.common.utils.StringUtils;
@@ -49,25 +68,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.io.CharStreams;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.logging.Logger;
 
 /**
  * Provides support for Young Android projects.
@@ -500,7 +500,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * @return an RpcResult reflecting the call to the Build Server
    */
   @Override
-  public RpcResult build(User user, long projectId, String nonce, String target) {
+  public RpcResult build(User user, long projectId, String nonce, String target,String actionName) {
     String userId = user.getUserId();
     String projectName = storageIo.getProjectName(userId, projectId);
     String outputFileDir = BUILD_FOLDER + '/' + target;
@@ -522,11 +522,15 @@ public final class YoungAndroidProjectService extends CommonProjectService {
           user.getUserEmail(),
           userId,
           projectId,
-          outputFileDir));
+          outputFileDir,
+          actionName
+          ));
       HttpURLConnection connection = (HttpURLConnection) buildServerUrl.openConnection();
       connection.setDoOutput(true);
       connection.setRequestMethod("POST");
-
+      LOG.info("==========================================================");
+      LOG.info("==========Called with actionName: "+actionName+"==========");
+      LOG.info("==========================================================");
       BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(connection.getOutputStream());
       FileExporter fileExporter = new FileExporterImpl();
       zipFile = fileExporter.exportProjectSourceZip(userId, projectId, false,
@@ -535,7 +539,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       bufferedOutputStream.write(zipFile.getContent());
       bufferedOutputStream.flush();
       bufferedOutputStream.close();
-
+      //LOG.info("==========Have the zip and it is named: "+zipFile.getFileName()+"==========");
       int responseCode = 0;
       try {
           responseCode = connection.getResponseCode();
@@ -553,6 +557,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         String error = "Build server responded with response code " + responseCode + ".";
         try {
           String content = readContent(connection.getInputStream());
+          LOG.info("************************"+content+"******************************");
           if (content != null && !content.isEmpty()) {
             error += "\n" + content;
           }
@@ -572,7 +577,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
           // so the owner of the app engine instance will know about it.
           LOG.severe(error);
         }
-
+        LOG.info("****************************Content: "+error+"**********************************");
         return new RpcResult(responseCode, "", StringUtils.escape(error));
       }
     } catch (MalformedURLException e) {
@@ -623,10 +628,11 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   // a little more complicated when we want to get the URL from an App Engine config file or
   // command line argument.
   private String getBuildServerUrlStr(String userName, String userId,
-                                      long projectId, String fileName)
+                                      long projectId, String fileName,String actionName)
       throws UnsupportedEncodingException, EncryptionException {
     return "http://" + buildServerHost.get() + "/buildserver/build-all-from-zip-async"
            + "?uname=" + URLEncoder.encode(userName, "UTF-8")
+           + "&actionName="+URLEncoder.encode(actionName,"UTF-8")
            + (sendGitVersion.get()
                ? "&gitBuildVersion="
                  + URLEncoder.encode(GitBuildId.getVersion(), "UTF-8")
@@ -679,11 +685,11 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    *           -1:  Build is not yet done.
    */
   @Override
-  public RpcResult getBuildResult(User user, long projectId, String target) {
+  public RpcResult getBuildResult(User user, long projectId, String target,String actionName) {
     String userId = user.getUserId();
     String buildOutputFileName = BUILD_FOLDER + '/' + target + '/' + "build.out";
     List<String> outputFiles = storageIo.getProjectOutputFiles(userId, projectId);
-    updateCurrentProgress(user, projectId, target);
+    updateCurrentProgress(user, projectId, target,actionName);
     RpcResult buildResult = new RpcResult(-1, ""+currentProgress, ""); // Build not finished
     for (String outputFile : outputFiles) {
       if (buildOutputFileName.equals(outputFile)) {
@@ -710,7 +716,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * @param projectId  project id to be built
    * @param target  build target (optional, implementation dependent)
    */
-  public void updateCurrentProgress(User user, long projectId, String target) {
+  public void updateCurrentProgress(User user, long projectId, String target,String actionName) {
     try {
       String userId = user.getUserId();
       String projectName = storageIo.getProjectName(userId, projectId);
@@ -719,7 +725,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       ProjectSourceZip zipFile = null;
 
       buildServerUrl = new URL(getBuildServerUrlStr(user.getUserEmail(),
-        userId, projectId, outputFileDir));
+        userId, projectId, outputFileDir,actionName));
       HttpURLConnection connection = (HttpURLConnection) buildServerUrl.openConnection();
       connection.setDoOutput(true);
       connection.setRequestMethod("POST");

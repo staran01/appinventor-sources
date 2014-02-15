@@ -61,6 +61,7 @@ public class ReceiveBuildServlet extends OdeServlet {
     odeFilter.setUserFromUserId(userId);
     try {
       String buildFileDirPath = uriComponents[4];
+      //String actionName = uriComponents[5];
       ZipInputStream zipInputStream = new ZipInputStream(req.getInputStream());
       while (true) {
         ZipEntry zipEntry = zipInputStream.getNextEntry();
@@ -76,6 +77,7 @@ public class ReceiveBuildServlet extends OdeServlet {
         } else {
           String filePath = buildFileDirPath + "/" + fileName;
           LOG.info("Saving build output files: " + filePath);
+          LOG.info("================Have the zip file "+zipEntry.getName()+"=================");
           storageIo.addOutputFilesToProject(userId, projectId, filePath);
           storageIo.uploadRawFile(projectId, filePath, userId, fileBytes);
         }

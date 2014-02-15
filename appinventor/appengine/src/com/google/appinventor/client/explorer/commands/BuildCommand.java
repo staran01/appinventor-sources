@@ -5,9 +5,12 @@
 
 package com.google.appinventor.client.explorer.commands;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import java.util.Date;
+
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.output.MessagesOutput;
 import com.google.appinventor.client.tracking.Tracking;
@@ -16,8 +19,6 @@ import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.i18n.client.DateTimeFormat;
 
-import java.util.Date;
-
 /**
  * Command for building a target in a project.
  *
@@ -25,14 +26,15 @@ import java.util.Date;
 public class BuildCommand extends ChainableCommand {
   // The build target
   private String target;
+  private String actionName;
 
   /**
    * Creates a new build command.
    *
    * @param target the build target
    */
-  public BuildCommand(String target) {
-    this(target, null);
+  public BuildCommand(String target,String actionName) {
+    this(target, null,actionName);
   }
 
   /**
@@ -42,9 +44,11 @@ public class BuildCommand extends ChainableCommand {
    * @param target the build target
    * @param nextCommand the command to execute after the build has finished
    */
-  public BuildCommand(String target, ChainableCommand nextCommand) {
+  public BuildCommand(String target, ChainableCommand nextCommand,String actionName) {
     super(nextCommand);
     this.target = target;
+    this.actionName = actionName;
+  
   }
 
   @Override
@@ -110,6 +114,6 @@ public class BuildCommand extends ChainableCommand {
     };
 
     String nonce = ode.generateNonce();
-    ode.getProjectService().build(node.getProjectId(), nonce, target, callback);
+    ode.getProjectService().build(node.getProjectId(), nonce, target,actionName,callback);
   }
 }

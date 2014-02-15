@@ -1250,6 +1250,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("USB")
   @Description("Message providing details about starting a USB connection.")
   String usbButton();
+  
+  @DefaultMessage("Smartlab")
+  @Description("Message providing details about starting a smartlab connection.")
+  String smartlabButton();
 
   @DefaultMessage("Reset Connection")
   @Description("Reset all connections.")

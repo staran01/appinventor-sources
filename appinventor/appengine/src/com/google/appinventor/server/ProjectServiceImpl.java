@@ -289,11 +289,11 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * @return  results of build
    */
   @Override
-  public RpcResult build(long projectId, String nonce, String target) {
+  public RpcResult build(long projectId, String nonce, String target,String actionName) {
     // Dispatch
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).build(
-      userInfoProvider.getUser(), projectId, nonce, target);
+      userInfoProvider.getUser(), projectId, nonce, target,actionName);
   }
 
   /**
@@ -308,11 +308,11 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    *           -1: Build is not yet done.
    */
   @Override
-  public RpcResult getBuildResult(long projectId, String target) {
+  public RpcResult getBuildResult(long projectId, String target,String actionName) {
     // Dispatch
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).getBuildResult(
-        userInfoProvider.getUser(), projectId, target);
+        userInfoProvider.getUser(), projectId, target,actionName);
   }
 
   /*

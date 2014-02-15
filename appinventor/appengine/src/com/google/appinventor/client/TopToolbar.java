@@ -2,8 +2,12 @@
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2013 MIT, All rights reserved
 // Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
-
+//package com.google.appinventor.buildserver have the actionName , there will be the post request
 package com.google.appinventor.client;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import java.util.List;
 
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
@@ -16,6 +20,7 @@ import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
 import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
 import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
+import com.google.appinventor.client.explorer.commands.SmartLabCommand;
 import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.output.OdeLog;
@@ -46,10 +51,6 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.List;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
 
 
 /**
@@ -85,6 +86,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_WIRELESS_BUTTON = "Wireless";
   private static final String WIDGET_NAME_EMULATOR_BUTTON = "Emulator";
   private static final String WIDGET_NAME_USB_BUTTON = "Usb";
+  private static final String WIDGET_NAME_SMARTLAB_BUTTON = "SmartLab";
   private static final String WIDGET_NAME_RESET_BUTTON = "Reset";
   private static final String WIDGET_NAME_PROJECT = "Project";
   private static final String WIDGET_NAME_HELP = "Help";
@@ -157,6 +159,8 @@ public class TopToolbar extends Composite {
     // Connect -> {Connect to Companion; Connect to Emulator; Connect to USB; Reset Connections}
     connectItems.add(new DropDownItem(WIDGET_NAME_WIRELESS_BUTTON,
         MESSAGES.wirelessButton(), new WirelessAction()));
+    connectItems.add(new DropDownItem(WIDGET_NAME_SMARTLAB_BUTTON,
+    		MESSAGES.smartlabButton(), new SmartlabAction()));
     connectItems.add(new DropDownItem(WIDGET_NAME_EMULATOR_BUTTON,
         MESSAGES.emulatorButton(), new EmulatorAction()));
     connectItems.add(new DropDownItem(WIDGET_NAME_USB_BUTTON, MESSAGES.usbButton(),
@@ -288,11 +292,42 @@ public class TopToolbar extends Composite {
       Ode.getInstance().getTopToolbar().updateFileMenuButtons(0);
     }
   }
+  
+  private class SmartlabAction implements Command {
+	  @Override
+	  public void execute() {
+	      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
+	      if (projectRootNode != null) {
+	        String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
+	        ChainableCommand cmd = new SaveAllEditorsCommand(
+	            new GenerateYailCommand(
+	                new BuildCommand(target,
+	                    new ShowProgressBarCommand(target,
+	                        new WaitForBuildResultCommand(target,
+	                            new SmartLabCommand(target),"SmartLabAction"), "SmartLabAction"),"SmartLabAction")));
+//	        updateBuildButton(true);
+	        cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_BARCODE_YA, projectRootNode,
+	            new Command() {
+	              @Override
+	              public void execute() {
+//	                updateBuildButton(false);
+	              }
+	            });
+	      }
+	    }
+	  /*public void execute(){
+		  //System.out.println("Smartlab action clicked!");
+		  startRepl(false,false,false,true);//need to change the true false true booleans so it accepts a new command
+		  new DownloadAction().execute();
+	  }*/
+  }
+  
+  
 
   private class WirelessAction implements Command {
     @Override
     public void execute() {
-      startRepl(true, false, false); // false means we are
+      startRepl(true, false, false,false); // false means we are
       // *not* the emulator
     }
   }
@@ -300,7 +335,7 @@ public class TopToolbar extends Composite {
   private class EmulatorAction implements Command {
     @Override
     public void execute() {
-      startRepl(true, true, false); // true means we are the
+      startRepl(true, true, false,false); // true means we are the
       // emulator
     }
   }
@@ -308,14 +343,14 @@ public class TopToolbar extends Composite {
   private class UsbAction implements Command {
     @Override
     public void execute() {
-      startRepl(true, false, true);
+      startRepl(true, false, true,false);
     }
   }
 
   private class ResetAction implements Command {
     @Override
     public void execute() {
-      startRepl(false, false, false); // We are really stopping the repl here
+      startRepl(false, false, false,false); // We are really stopping the repl here
     }
   }
 
@@ -330,7 +365,7 @@ public class TopToolbar extends Composite {
                 new BuildCommand(target,
                     new ShowProgressBarCommand(target,
                         new WaitForBuildResultCommand(target,
-                            new ShowBarcodeCommand(target)), "BarcodeAction"))));
+                            new ShowBarcodeCommand(target),"BarcodeAction"), "BarcodeAction"),"BarcodeAction")));
 //        updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_BARCODE_YA, projectRootNode,
             new Command() {
@@ -354,7 +389,7 @@ public class TopToolbar extends Composite {
                 new BuildCommand(target,
                     new ShowProgressBarCommand(target,
                         new WaitForBuildResultCommand(target,
-                            new DownloadProjectOutputCommand(target)), "DownloadAction"))));
+                            new DownloadProjectOutputCommand(target),"DownloadAction"), "DownloadAction"),"DownloadAction")));
 //        updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_YA, projectRootNode,
             new Command() {
@@ -652,15 +687,17 @@ public class TopToolbar extends Composite {
     }
   }
 
-  private void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning, boolean isUsbRunning){
-    if (!isEmulatorRunning && !isCompanionRunning && !isUsbRunning) {
+  private void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning, boolean isUsbRunning,boolean isSmartlabRunning){
+    if (!isEmulatorRunning && !isCompanionRunning && !isUsbRunning && !isSmartlabRunning) {
       connectDropDown.setItemEnabled(MESSAGES.wirelessButton(), true);
       connectDropDown.setItemEnabled(MESSAGES.emulatorButton(), true);
       connectDropDown.setItemEnabled(MESSAGES.usbButton(), true);
+      connectDropDown.setItemEnabled(MESSAGES.smartlabButton(), true);
     } else {
       connectDropDown.setItemEnabled(MESSAGES.wirelessButton(), false);
       connectDropDown.setItemEnabled(MESSAGES.emulatorButton(), false);
       connectDropDown.setItemEnabled(MESSAGES.usbButton(), false);
+      connectDropDown.setItemEnabled(MESSAGES.smartlabButton(),false);
     }
   }
 
@@ -670,7 +707,7 @@ public class TopToolbar extends Composite {
    */
   public static void indicateDisconnect() {
     TopToolbar instance = Ode.getInstance().getTopToolbar();
-    instance.updateConnectToDropDownButton(false, false, false);
+    instance.updateConnectToDropDownButton(false, false, false,false);
   }
 
   /**
@@ -684,7 +721,7 @@ public class TopToolbar extends Composite {
    * via Wireless.
    */
 
-  private void startRepl(boolean start, boolean forEmulator, boolean forUsb) {
+  private void startRepl(boolean start, boolean forEmulator, boolean forUsb,boolean forSmartlab) {
     DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
     if (currentProject == null) {
       OdeLog.wlog("DesignToolbar.currentProject is null. "
@@ -695,14 +732,16 @@ public class TopToolbar extends Composite {
     screen.blocksEditor.startRepl(!start, forEmulator, forUsb);
     if (start) {
       if (forEmulator) {        // We are starting the emulator...
-        updateConnectToDropDownButton(true, false, false);
+        updateConnectToDropDownButton(true, false, false,false);
       } else if (forUsb) {      // We are starting the usb connection
-        updateConnectToDropDownButton(false, false, true);
+        updateConnectToDropDownButton(false, false, true,false);
+      }else if(forSmartlab){
+    	  updateConnectToDropDownButton(false, false, false,true);//need to add new boolean
       } else {                  // We are connecting via wifi to a Companion
-        updateConnectToDropDownButton(false, true, false);
+        updateConnectToDropDownButton(false, true, false,true);
       }
     } else {
-      updateConnectToDropDownButton(false, false, false);
+      updateConnectToDropDownButton(false, false, false,false);
     }
   }
 
