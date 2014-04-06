@@ -345,10 +345,10 @@ function ode(){
   $stats && $stats({moduleName:'ode', sessionId:$sessionId_0, subSystem:'startup', evtGroup:'bootstrap', millis:(new Date).getTime(), type:'selectingPermutation'});
   if (!isHostedMode()) {
     try {
-      unflattenKeylistIntoAnswers(['de', 'safari'], '0F84F355855408AE6730458CDC8EDA8E');
-      unflattenKeylistIntoAnswers(['de', 'gecko1_8'], '21AF3AA5FE736952A1A1448FE472A986');
-      unflattenKeylistIntoAnswers(['default', 'gecko1_8'], '52539B5002A5570D9C2159393AFAD22F');
-      unflattenKeylistIntoAnswers(['default', 'safari'], 'E34B17A69A5EA9EA758748CE36C0A2B7');
+      unflattenKeylistIntoAnswers(['de', 'gecko1_8'], '691CBB73A6EB03FFC40776D4DC71B47A');
+      unflattenKeylistIntoAnswers(['de', 'safari'], '9C25ACEC87D121D442F27B1432A1A9A4');
+      unflattenKeylistIntoAnswers(['default', 'gecko1_8'], 'D7E20170E12D6A8497233DD4E4716A55');
+      unflattenKeylistIntoAnswers(['default', 'safari'], 'D81FD89DC22C86F6B1DF780C24F04CBA');
       strongName = answers[computePropValue('locale')][computePropValue('user.agent')];
       var idx = strongName.indexOf(':');
       if (idx != -1) {

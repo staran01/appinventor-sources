@@ -8,6 +8,7 @@ package com.google.appinventor.client.utils;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -45,6 +46,7 @@ public class Downloader extends Frame {
   public final void download(String path) {
     ErrorReporter.hide();
     setUrl(GWT.getModuleBaseURL() + path);
+ //   Window.alert(GWT.getModuleBaseURL() + path);
   }
 
   /**
