@@ -109,7 +109,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>downloadServlet</servlet-name>
-    <url-pattern>/ode/download/*</url-pattern>
+    <url-pattern>/b/download/*</url-pattern>
   </servlet-mapping>
   
   <!-- getmotd -->
