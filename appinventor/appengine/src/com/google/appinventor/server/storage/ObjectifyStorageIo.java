@@ -1001,9 +1001,9 @@ public class ObjectifyStorageIo implements  StorageIo {
   @Override
   public List<String> getProjectOutputFiles(final String userId, final long projectId) {
    if (!getProjects(userId).contains(projectId)) {
-     throw CrashReport.createAndLogError(LOG, null,
-         collectUserProjectErrorInfo(userId, projectId),
-         new UnauthorizedAccessException(userId, projectId, null));
+//     throw CrashReport.createAndLogError(LOG, null,
+//         collectUserProjectErrorInfo(userId, projectId),
+//         new UnauthorizedAccessException(userId, projectId, null));
    }
    final Result<List<String>> result = new Result<List<String>>();
    try {
@@ -1286,9 +1286,9 @@ public class ObjectifyStorageIo implements  StorageIo {
   @Override
   public byte[] downloadRawFile(final String userId, final long projectId, final String fileName) {
     if (!getProjects(userId).contains(projectId)) {
-      throw CrashReport.createAndLogError(LOG, null,
-          collectUserProjectErrorInfo(userId, projectId),
-          new UnauthorizedAccessException(userId, projectId, null));
+//      throw CrashReport.createAndLogError(LOG, null,
+//          collectUserProjectErrorInfo(userId, projectId),
+//          new UnauthorizedAccessException(userId, projectId, null));
     }
     final Result<byte[]> result = new Result<byte[]>();
     final Result<FileData> fd = new Result<FileData>();

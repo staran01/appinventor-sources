@@ -70,6 +70,8 @@ public class SmartLabCommand extends ChainableCommand {
 				"http://smartlab-ds1.cs.ucy.ac.cy/app_inventor/push.php/?"
 						+ "username=" + username + "&api_key=" + key + "&link="
 						+ uri);
+		
+	//	RequestBuilder rb = new RequestBuilder(RequestBuilder.GET,"localhost:8888/ode/download/project-output/5629499534213120/Android");
 
 		try {
 			rb.sendRequest(null, new RequestCallback() {
@@ -77,7 +79,7 @@ public class SmartLabCommand extends ChainableCommand {
 				@Override
 				public void onResponseReceived(Request arg0, Response arg1) {
 					// TODO Auto-generated method stub
-
+					
 				}
 
 				@Override

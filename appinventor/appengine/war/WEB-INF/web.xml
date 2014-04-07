@@ -53,6 +53,7 @@
       <url-pattern>/about/*</url-pattern>
       <url-pattern>/forum/*</url-pattern>
       <url-pattern>/b/*</url-pattern>
+      <url-pattern>/b/download/*</url-pattern>
 <!--      <url-pattern>/rendezvous/*</url-pattern> -->
     </web-resource-collection>
   </security-constraint>
@@ -110,11 +111,7 @@
     <servlet-name>downloadServlet</servlet-name>
     <url-pattern>/ode/download/*</url-pattern>
   </servlet-mapping>
-  <filter-mapping>
-    <filter-name>odeAuthFilter</filter-name>
-    <servlet-name>downloadServlet</servlet-name>
-  </filter-mapping>
-
+  
   <!-- getmotd -->
   <servlet>
     <servlet-name>getMotdService</servlet-name>

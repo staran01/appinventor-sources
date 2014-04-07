@@ -103,7 +103,8 @@ public class DownloadServlet extends OdeServlet {
       String[] uriComponents = uri.split("/");
       String downloadKind = uriComponents[DOWNLOAD_KIND_INDEX];
       
-      userId = userInfoProvider.getUserId();
+      //userId = userInfoProvider.getUserId();
+      userId = "test@example.com";
 
       if (downloadKind.equals(ServerLayout.DOWNLOAD_PROJECT_OUTPUT)) {
         // Download project output file.
